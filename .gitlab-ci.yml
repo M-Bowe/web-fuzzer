@@ -1,0 +1,18 @@
+image: andymeneely/swen331fuzzer
+before_script:
+    # do not change any of the statements in this section
+    - service apache2 start
+    - mysql_install_db --user=mysql -ldata=/var/lib/mysql
+    - service mysql start
+    - /usr/bin/mysqladmin -u root password fuzzer
+    - service mysql restart
+    - /mysql-setup.sh
+    # do not change any of the statements in this section
+samsrunner:
+  script:
+    # here is where you can write your commands to run your fuzzer or any custom setup commands
+    - echo "hello class"
+    - ruby fuzzer.rb discover http://localhost/ --custom-auth=dvwa
+    - ruby fuzzer.rb discover http://localhost --custom-auth=dvwa --common-words=/words.txt
+    - ruby fuzzer.rb test http://localhost --custom-auth=dvwa --common-words=/words.txt --vectors=/vectors.txt --sensitive=my_sensitive_data_file.txt --random=true --slow=100
+  stage: test
